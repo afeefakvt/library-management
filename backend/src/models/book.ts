@@ -1,4 +1,3 @@
-// src/models/Book.ts
 import mongoose, { Document } from "mongoose";
 
 export interface IBook extends Document {

@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
 import connectDB from "./config/db";
-import authRoutes from "./routes/userRoutes";
+import userRoutes from "./routes/userRoutes";
 import bookRoutes from "./routes/bookRoutes";
 import { errorHandler } from "./middlewares/error";
 
@@ -17,7 +17,7 @@ app.use(morgan("dev"));
 
 connectDB();
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", userRoutes);
 app.use("/api/books", bookRoutes);
 
 app.use(errorHandler);
