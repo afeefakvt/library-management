@@ -15,4 +15,8 @@ export const MESSAGES = {
   GENERAL: {
     SERVER_ERROR: "Something went wrong",
   },
+  TOKEN:{
+    ACCESS_DENIED:"Access denied no token provided",
+    EXPIRED :"Token is expired.Please login again."
+  }
 };
