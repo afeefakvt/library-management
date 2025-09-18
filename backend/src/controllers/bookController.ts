@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import Book from "../models/book";
 import { HTTP_STATUS } from "../constants/httpStatus";
+import { MESSAGES } from "../constants/messages";
 
 export const createBook = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const book = await Book.create(req.body);
-    res.status(HTTP_STATUS.CREATED).json(book);
+    res.status(HTTP_STATUS.CREATED).json({message:MESSAGES.BOOK.CREATED_SUCCESS,book});
   } catch (error) {
     next(error);
   }
@@ -32,13 +33,13 @@ export const checkoutBook = async (req: Request, res: Response, next: NextFuncti
   try {
     const book = await Book.findById(req.params.id);
     if (!book) {
-      const error: any = new Error("Book not found");
+      const error: any = new Error(MESSAGES.BOOK.NOT_FOUND);
       error.statusCode = HTTP_STATUS.NOT_FOUND;
       return next(error);
     }
 
     if (book.stock <= 0) {
-      const error: any = new Error("Out of stock");
+      const error: any = new Error(MESSAGES.BOOK.OUT_OF_STOCK);
       error.statusCode = HTTP_STATUS.BAD_REQUEST;
       return next(error);
     }

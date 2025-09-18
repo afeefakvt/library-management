@@ -3,6 +3,7 @@ import { hashPassword, comparePassword } from "../utils/password";
 import User from "../models/user";
 import { HTTP_STATUS } from "../constants/httpStatus";
 import { generateRefreshToken, generateAccessToken } from "../utils/jwt";
+import { MESSAGES } from "../constants/messages";
 
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -12,7 +13,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     if (existingUser) {
        res
         .status(HTTP_STATUS.BAD_REQUEST)
-        .json({ message: "User already exists" });
+        .json({ message: MESSAGES.USER.ALREADY_EXISTS });
         return;
     }
 
@@ -20,7 +21,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     const user = new User({ name, email, password: hashedPassword });
     await user.save();
 
-    res.status(HTTP_STATUS.CREATED).json({ message: "User registered successfully" });
+    res.status(HTTP_STATUS.CREATED).json({ message: MESSAGES.USER.REGISTER_SUCCESS });
   } catch (error) {
     next(error); 
   }
@@ -32,20 +33,20 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 
     const user = await User.findOne({ email });
     if (!user) {
-       res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "Invalid email" });
+       res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: MESSAGES.USER.INVALID_EMAIL });
        return;
     }
 
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
-       res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "Invalid password" });
+       res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: MESSAGES.USER.INVALID_PASSWORD });
        return;
     }
 
     const accessToken = generateAccessToken({ id: user._id, email: user.email });
     if (!accessToken) {
-       res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
-       return;
+        res.status(HTTP_STATUS.NOT_FOUND).json({ message: MESSAGES.USER.NOT_FOUND });
+        return;
     }
 
     const refreshToken = generateRefreshToken({ id: user._id });
@@ -56,7 +57,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(HTTP_STATUS.OK).json({ message: "Login Successful", accessToken, user });
+    res.status(HTTP_STATUS.OK).json({ message: MESSAGES.USER.LOGIN_SUCCESS, accessToken, user });
   } catch (error) {
     next(error); 
   }
